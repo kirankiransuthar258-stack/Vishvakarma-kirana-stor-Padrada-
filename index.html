@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vishvakarma Kirana Store</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f2f5f2;color:#222}
+header{background:#087b43;color:white;padding:20px;text-align:center}
+main{padding:15px;max-width:600px;margin:auto}
+.box{background:white;padding:15px;margin:12px 0;border-radius:12px;box-shadow:0 2px 7px #ddd}
+input,button{padding:12px;margin:5px 0;width:100%;box-sizing:border-box;border-radius:7px;border:1px solid #ccc;font-size:16px}
+button{background:#087b43;color:white;border:0;font-weight:bold}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.item button{width:auto}
+</style>
+</head>
+<body>
+<header>
+<h2>🛒 Vishvakarma Kirana Store</h2>
+<p>पदराड़ा | आपका अपना किराना स्टोर</p>
+</header>
+<main>
+<div class="box">
+<h3>📦 सामान जोड़ें</h3>
+<input id="name" placeholder="सामान का नाम">
+<input id="price" type="number" placeholder="कीमत रुपये में">
+<button onclick="addProduct()">सामान जोड़ें</button>
+</div>
+<div class="box">
+<h3>🛍️ सामान की सूची</h3>
+<div id="products">अभी सामान नहीं जोड़ा गया है।</div>
+</div>
+<div class="box">
+<h3>📒 उधारी का हिसाब</h3>
+<input id="customer" placeholder="ग्राहक का नाम">
+<input id="due" type="number" placeholder="उधार की रकम">
+<button onclick="addDue()">उधारी जोड़ें</button>
+<div id="dues"></div>
+</div>
+</main>
+<script>
+let products=JSON.parse(localStorage.getItem('products')||'[]');
+let dues=JSON.parse(localStorage.getItem('dues')||'[]');
+function showProducts(){
+document.getElementById('products').innerHTML=products.length?products.map((p,i)=>`<div class="item"><span>${p.name} - ₹${p.price}</span><button onclick="order(${i})">ऑर्डर</button></div>`).join(''):'अभी सामान नहीं जोड़ा गया है।';
+}
+function addProduct(){
+let name=document.getElementById('name').value.trim();
+let price=Number(document.getElementById('price').value);
+if(!name||price<=0){alert('सामान का नाम और सही कीमत लिखें');return;}
+products.push({name,price});
+localStorage.setItem('products',JSON.stringify(products));
+document.getElementById('name').value='';
+document.getElementById('price').value='';
+showProducts();
+}
+function order(i){
+let p=products[i];
+let msg=`मुझे ${p.name} चाहिए। कीमत ₹${p.price}`;
+window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+function addDue(){
+let customer=document.getElementById('customer').value.trim();
+let due=Number(document.getElementById('due').value);
+if(!customer||due<=0){alert('नाम और रकम सही लिखें');return;}
+dues.push({customer,due});
+localStorage.setItem('dues',JSON.stringify(dues));
+document.getElementById('customer').value='';
+document.getElementById('due').value='';
+showDues();
+}
+function showDues(){
+document.getElementById('dues').innerHTML=dues.map(d=>`<p>${d.customer}: ₹${d.due} उधार</p>`).join('')||'अभी कोई उधारी नहीं है।';
+}
+showProducts();showDues();
+</script>
+</body>
+</html>
